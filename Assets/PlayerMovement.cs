@@ -6,15 +6,68 @@ public class PlayerMovement : MonoBehaviour
 {
     public bool inMech;
 
-    // Start is called before the first frame update
-    void Start()
-    {
+    public Rigidbody rb;
 
-    }
+    [Header("In-Base Variables")]
+    public float speed;
+    public float mouseSense;
+    public float jumpForce;
+    public float gravity;
 
-    // Update is called once per frame
+    [Header("Mech Variables")]
+    public float speedMech;
+    public float turnMech;
+    public float jumpForceMech;
+    public float gravityMech;
+
+    Vector2 input;
+
     void Update()
     {
+        //Input
+        input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
 
+        if (inMech) ManageMechMovement();
+        else ManageMovement();
+    }
+
+    void ManageMovement()
+    {
+        //Cursor
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        //Calculations
+        var hMove = (input.x * Time.deltaTime * speed) * transform.right;
+        var vMove = (input.y * Time.deltaTime * speed) * transform.forward;
+
+        //Move player
+        rb.velocity = hMove + vMove;
+
+        //Camera Rotate
+        rb.angularVelocity = Vector3.zero;
+        float x = Input.GetAxis("Mouse X");
+        float y = -Input.GetAxis("Mouse Y");
+        transform.GetChild(0).Rotate(y * Time.deltaTime * mouseSense, 0, 0);
+        transform.Rotate(0, x * Time.deltaTime * mouseSense, 0);
+    }
+
+    void ManageMechMovement()
+    {
+        //Cursor
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        //Forwards speed
+        var speedMult = (input.y * Time.deltaTime * speedMech);
+
+        //Slow down if rotating
+        if (input.x > 0.1f || input.x < -0.1f)
+            speedMult /= 5f;
+        print(speedMult);
+
+        //Setting
+        rb.velocity = speedMult * transform.forward;
+        rb.angularVelocity = (input.x * Time.deltaTime * turnMech) * Vector3.up;
     }
 }
