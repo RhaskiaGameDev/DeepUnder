@@ -7,6 +7,8 @@ public class PlayerMovement : MonoBehaviour
     public bool inMech;
 
     public Rigidbody rb;
+    public Transform cameraHolder;
+    public PlayerManager manager;
 
     [Header("In-Base Variables")]
     public float speed;
@@ -48,7 +50,8 @@ public class PlayerMovement : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
         float x = Input.GetAxis("Mouse X");
         float y = -Input.GetAxis("Mouse Y");
-        transform.GetChild(0).Rotate(y * Time.deltaTime * mouseSense, 0, 0);
+
+        cameraHolder.Rotate(y * Time.deltaTime * mouseSense, 0, 0);
         transform.Rotate(0, x * Time.deltaTime * mouseSense, 0);
     }
 
@@ -58,8 +61,9 @@ public class PlayerMovement : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        //Forwards speed
+        //Speed Calculations
         var speedMult = (input.y * Time.deltaTime * speedMech);
+        var turnMult = (input.x * Time.deltaTime * turnMech);
 
         //Slow down if rotating
         if (input.x > 0.1f || input.x < -0.1f)
@@ -68,6 +72,9 @@ public class PlayerMovement : MonoBehaviour
 
         //Setting
         rb.velocity = speedMult * transform.forward;
-        rb.angularVelocity = (input.x * Time.deltaTime * turnMech) * Vector3.up;
+        rb.angularVelocity = turnMult * Vector3.up;
+
+        //Power 
+        manager.power.current -= manager.power.decrease * (Mathf.Abs(turnMult) + Mathf.Abs(speedMult));
     }
 }
