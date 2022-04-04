@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody rb;
     public Transform cameraHolder;
     public PlayerManager manager;
+    public DisturbanceManager distManager;
 
     [Header("In-Base Variables")]
     public float speed;
@@ -23,6 +24,13 @@ public class PlayerMovement : MonoBehaviour
     public float gravityMech;
 
     Vector2 input;
+
+    float disturbance;
+
+    private void Start()
+    {
+        Invoke("ManageDisturb", 0.5f);
+    }
 
     void Update()
     {
@@ -76,5 +84,16 @@ public class PlayerMovement : MonoBehaviour
 
         //Power 
         manager.power.current -= manager.power.decrease * (Mathf.Abs(turnMult) + Mathf.Abs(speedMult));
+
+        //Disturbances
+        disturbance += Mathf.Abs(turnMult) + Mathf.Abs(speedMult);
+    }
+
+    void ManageDisturb()
+    {
+        distManager.CreateDisturbance(disturbance, 0.1f, transform.position);
+        disturbance = 0;
+
+        Invoke("ManageDisturb", 0.5f);
     }
 }
