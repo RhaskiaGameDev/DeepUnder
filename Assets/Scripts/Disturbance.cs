@@ -20,6 +20,7 @@ public class Disturbance : MonoBehaviour
 
         if (size < 0.05f)
         {
+            FindObjectOfType<DisturbanceManager>().disturbances.Remove(this);
             Destroy(gameObject);
         }
     }

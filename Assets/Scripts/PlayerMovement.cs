@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
 
     Vector2 input;
 
-    float disturbance;
+    Vector2 disturbance;
 
     private void Start()
     {
@@ -86,13 +86,14 @@ public class PlayerMovement : MonoBehaviour
         manager.power.current -= manager.power.decrease * (Mathf.Abs(turnMult) + Mathf.Abs(speedMult));
 
         //Disturbances
-        disturbance += Mathf.Abs(turnMult) + Mathf.Abs(speedMult);
+        disturbance.x += Mathf.Abs(speedMult);
+        disturbance.y += Mathf.Abs(turnMult);
     }
 
     void ManageDisturb()
     {
-        distManager.CreateDisturbance(disturbance, 0.1f, transform.position);
-        disturbance = 0;
+        distManager.CreateDisturbance((disturbance.x / 200f) + (disturbance.y / 200f), 0.1f, transform.position);
+        disturbance = Vector2.zero;
 
         Invoke("ManageDisturb", 0.5f);
     }

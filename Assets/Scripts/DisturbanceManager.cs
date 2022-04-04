@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DisturbanceManager : MonoBehaviour
 {
-    public Disturbance[] disturbances;
+    public List<Disturbance> disturbances;
     public float distance;
     public GameObject prefab;
 
@@ -27,6 +27,8 @@ public class DisturbanceManager : MonoBehaviour
         else
         {
             Disturbance dist = Instantiate(prefab, position, Quaternion.identity).GetComponent<Disturbance>();
+            disturbances.Add(dist);
+
             dist.transform.parent = transform;
             dist.size = size;
             dist.decrease = decrease;
