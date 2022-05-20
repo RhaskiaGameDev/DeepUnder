@@ -32,14 +32,30 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Fear
+        fear.current += health.current / health.max;
+
+        //O2
         o2.current -= (fear.current / fear.max) * o2.decrease * Time.deltaTime;
 
+        //Sliders
         var values = new Value[4] { health, o2, power, fear };
         foreach (var value in values)
         {
+            value.current = Mathf.Clamp(value.current, 0, value.max);
+
             value.slider.maxValue = value.max;
             value.slider.value = value.current;
         }
+
+        //Death
+        if (health.current == 0) Die();
     }
 
+    void Die()
+    {
+        Debug.LogWarning("get good");
+    }
+
+    public void TakeDamage() { health.current--; }
 }

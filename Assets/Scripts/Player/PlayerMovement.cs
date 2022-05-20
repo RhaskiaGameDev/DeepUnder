@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform cameraHolder;
     public PlayerManager manager;
     public DisturbanceManager distManager;
+    public float disturbanceMult;
 
     [Header("In-Base Variables")]
     public float speed;
@@ -25,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
 
     Vector2 input;
 
-    Vector2 disturbance;
+    float disturbance;
 
     private void Start()
     {
@@ -76,7 +77,6 @@ public class PlayerMovement : MonoBehaviour
         //Slow down if rotating
         if (input.x > 0.1f || input.x < -0.1f)
             speedMult /= 5f;
-        print(speedMult);
 
         //Setting
         rb.velocity = speedMult * transform.forward;
@@ -86,15 +86,17 @@ public class PlayerMovement : MonoBehaviour
         manager.power.current -= manager.power.decrease * (Mathf.Abs(turnMult) + Mathf.Abs(speedMult));
 
         //Disturbances
-        disturbance.x += Mathf.Abs(speedMult);
-        disturbance.y += Mathf.Abs(turnMult);
+        disturbance += (Mathf.Abs(speedMult) + Mathf.Abs(turnMult)) * disturbanceMult;
     }
 
     void ManageDisturb()
     {
-        distManager.CreateDisturbance((disturbance.x / 200f) + (disturbance.y / 200f), 0.1f, transform.position);
-        disturbance = Vector2.zero;
-
         Invoke("ManageDisturb", 0.5f);
+        print(disturbance);
+        if (disturbance < 0.1f)
+            return;
+
+        distManager.CreateDisturbance(disturbance, 0.5f, transform.position);
+        disturbance = 0;
     }
 }
